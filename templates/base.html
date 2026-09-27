@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- lets each page (dashboard, add_review, etc.) set its own tab title via a block -->
+  <title>{% block title %}Dashboard{% endblock %} — Business Report System</title>
+  <!-- url_for('static', filename=...) builds the correct path to static/style.css automatically -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- Everything lives inside .layout: sidebar on the left, main content on the right -->
+  <div class="layout">
+
+    <!-- Sidebar nav, shared across every page since this is the base template -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">Business Reports</div>
+      <nav class="sidebar-nav">
+        <!-- request.endpoint checks which route we're currently on so we can highlight it -->
+        <a href="{{ url_for('dashboard') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard' }}">Dashboard</a>
+        <a href="{{ url_for('add_review') }}" class="nav-link {{ 'active' if request.endpoint == 'add_review' }}">Add Review</a>
+        <a href="{{ url_for('add_appointment') }}" class="nav-link {{ 'active' if request.endpoint == 'add_appointment' }}">Add Appointment</a>
+        <!-- Not wired up yet -- placeholder for later if we add a settings page -->
+        <a href="#" class="nav-link">Report Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="main-header">
+        <!-- Each child template overrides this block with its own page heading -->
+        <h1>{% block header %}Dashboard{% endblock %}</h1>
+      </header>
+
+      <div class="main-content">
+        <!-- This is where dashboard.html / add_review.html / add_appointment.html inject their content -->
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,254 @@
+/* ---------- Base ---------- */
+/* CSS variables so colors are defined once and reused everywhere below --
+   change a value here and it updates the whole site */
+:root {
+  --bg: #F6F7F9;
+  --panel-bg: #FFFFFF;
+  --navy: #16232F;
+  --slate: #3A4550;
+  --muted: #7A8591;
+  --border: #E2E5EA;
+  --accent: #2F6F5E;
+  --gold: #C9A227;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--slate);
+}
+
+/* ---------- Layout ---------- */
+/* flexbox splits the page into sidebar + main content, side by side */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background: var(--navy);
+  color: #FFFFFF;
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+
+.sidebar-brand {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 0 24px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 12px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  padding: 12px 24px;
+  font-size: 14px;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+}
+
+.nav-link.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  border-left: 3px solid var(--accent);
+}
+
+.main {
+  flex: 1;
+  padding: 32px 40px;
+}
+
+.main-header h1 {
+  margin: 0 0 24px;
+  font-size: 24px;
+  color: var(--navy);
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ---------- Panels ---------- */
+/* .panel is the reusable white card style used for both the reviews box
+   and the appointments box on the dashboard, plus the form boxes */
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px 24px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--navy);
+}
+
+.panel-count {
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 2px 10px;
+}
+
+.empty-state {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ---------- Reviews ---------- */
+/* review-rating uses the gold accent color to make star ratings stand out
+   from the rest of the (mostly gray/slate) text */
+.review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.review-item {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.review-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.review-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.review-author {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 14px;
+}
+
+.review-rating {
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+
+.review-text {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.review-source {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---------- Appointments ---------- */
+.appointment-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.appointment-table th {
+  text-align: left;
+  padding: 8px 12px;
+  color: var(--muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+
+.appointment-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.appointment-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------- Forms ---------- */
+/* shared styling for both add_review.html and add_appointment.html --
+   max-width keeps the form from stretching full page width */
+.entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 420px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--slate);
+  background: var(--panel-bg);
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.submit-btn {
+  align-self: flex-start;
+  background: var(--accent);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #275C4E;
+}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+<!-- extends base.html so we get the sidebar/layout for free and just fill in the blocks below -->
+
+{% block title %}Dashboard{% endblock %}
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+
+  <!-- REVIEWS PANEL -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Recent Reviews</h2>
+      <!-- reviews gets passed in from app.py's dashboard() route -->
+      <span class="panel-count">{{ reviews|length if reviews else 0 }}</span>
+    </div>
+
+    {% if reviews %}
+      <ul class="review-list">
+        {% for review in reviews %}
+          <li class="review-item">
+            <div class="review-top">
+              <span class="review-author">{{ review.author }}</span>
+              <!-- builds star display, ex: rating 4 -> "★★★★☆" -->
+              <span class="review-rating">{{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}</span>
+            </div>
+            <p class="review-text">{{ review.text }}</p>
+            <span class="review-source">via {{ review.source }} — {{ review.date }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <!-- shows up until db.py actually has reviews to return -->
+      <p class="empty-state">No reviews yet. Once reviews are added to the database, they'll show up here.</p>
+    {% endif %}
+  </section>
+
+  <!-- APPOINTMENTS PANEL -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Upcoming Appointments</h2>
+      <span class="panel-count">{{ appointments|length if appointments else 0 }}</span>
+    </div>
+
+    {% if appointments %}
+      <table class="appointment-table">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Service</th>
+            <th>Date</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appt in appointments %}
+            <tr>
+              <td>{{ appt.customer_name }}</td>
+              <td>{{ appt.service }}</td>
+              <td>{{ appt.date }}</td>
+              <td>{{ appt.time }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">No appointments yet. New sign-ups will appear here.</p>
+    {% endif %}
+  </section>
+
+{% endblock %}

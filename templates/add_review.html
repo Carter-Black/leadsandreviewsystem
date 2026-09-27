@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+<!-- form for manually entering test review data -- this is standing in for a real review API for now -->
+
+{% block title %}Add Review{% endblock %}
+{% block header %}Add a Review{% endblock %}
+
+{% block content %}
+
+  <section class="panel">
+    <!-- method="POST" so the data goes in the request body, not the URL -->
+    <!-- action url_for's the route name, not the url path, so this won't break if the route changes -->
+    <form class="entry-form" method="POST" action="{{ url_for('add_review') }}">
+
+      <div class="form-field">
+        <label for="author">Reviewer name</label>
+        <input type="text" id="author" name="author" required>
+      </div>
+
+      <div class="form-field">
+        <label for="rating">Rating</label>
+        <!-- dropdown instead of free text so rating always comes in as a clean 1-5 number -->
+        <select id="rating" name="rating" required>
+          <option value="5">5 — Excellent</option>
+          <option value="4">4 — Good</option>
+          <option value="3">3 — Average</option>
+          <option value="2">2 — Poor</option>
+          <option value="1">1 — Very poor</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="source">Source</label>
+        <!-- only Google/Yelp for now since that's what the project spec calls for -->
+        <select id="source" name="source" required>
+          <option value="Google">Google</option>
+          <option value="Yelp">Yelp</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="text">Review text</label>
+        <textarea id="text" name="text" rows="4" required></textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="date">Date</label>
+        <!-- type="date" gives us the little native calendar picker for free -->
+        <input type="date" id="date" name="date" required>
+      </div>
+
+      <button type="submit" class="submit-btn">Save review</button>
+
+    </form>
+  </section>
+
+{% endblock %}

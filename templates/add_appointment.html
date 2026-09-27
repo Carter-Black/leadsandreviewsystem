@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+<!-- form for adding an appointment sign-up (this is what a customer would fill out) -->
+
+{% block title %}Add Appointment{% endblock %}
+{% block header %}Add an Appointment{% endblock %}
+
+{% block content %}
+
+  <section class="panel">
+    <form class="entry-form" method="POST" action="{{ url_for('add_appointment') }}">
+
+      <div class="form-field">
+        <label for="customer_name">Customer name</label>
+        <input type="text" id="customer_name" name="customer_name" required>
+      </div>
+
+      <div class="form-field">
+        <label for="service">Service</label>
+        <!-- free text for now -- could switch to a dropdown later if we lock down specific service types -->
+        <input type="text" id="service" name="service" required>
+      </div>
+
+      <div class="form-field">
+        <label for="date">Date</label>
+        <input type="date" id="date" name="date" required>
+      </div>
+
+      <div class="form-field">
+        <label for="time">Time</label>
+        <input type="time" id="time" name="time" required>
+      </div>
+
+      <button type="submit" class="submit-btn">Save appointment</button>
+
+    </form>
+  </section>
+
+{% endblock %}
