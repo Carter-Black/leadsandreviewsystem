@@ -14,6 +14,10 @@
       <span class="panel-count">{{ reviews|length if reviews else 0 }}</span>
     </div>
 
+    <form method="POST" action="{{ url_for('test_email') }}">
+      <button type="submit" class="submit-btn">Send test report</button>
+    </form>
+
     {% if reviews %}
       <ul class="review-list">
         {% for review in reviews %}

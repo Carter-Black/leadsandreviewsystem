@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
+import os
 import db
+from emailer import send_test_email
 
 app = Flask(__name__)
 
@@ -41,6 +43,12 @@ def add_appointment():
         )
         return redirect(url_for("dashboard"))
     return render_template("add_appointment.html")
+
+@app.route("/test-email", methods=["POST"])
+def test_email():
+    recipient = os.environ["REPORT_EMAIL"]
+    send_test_email(recipient)
+    return "Test email sent"
 
 
 if __name__ == "__main__":
