@@ -15,6 +15,18 @@
       </div>
 
       <div class="form-field">
+        <label for="phone">Phone</label>
+        <!-- type="tel" brings up the number pad on phones -->
+        <input type="tel" id="phone" name="phone" required>
+      </div>
+
+      <div class="form-field">
+        <label for="email">Email</label>
+        <!-- type="email" gives us basic format checking for free -->
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-field">
         <label for="service">Service</label>
         <!-- free text for now -- could switch to a dropdown later if we lock down specific service types -->
         <input type="text" id="service" name="service" required>

@@ -50,6 +50,8 @@
         <thead>
           <tr>
             <th>Customer</th>
+            <th>Phone</th>
+            <th>Email</th>
             <th>Service</th>
             <th>Date</th>
             <th>Time</th>
@@ -59,6 +61,8 @@
           {% for appt in appointments %}
             <tr>
               <td>{{ appt.customer_name }}</td>
+              <td>{{ appt.phone }}</td>
+              <td>{{ appt.email }}</td>
               <td>{{ appt.service }}</td>
               <td>{{ appt.date }}</td>
               <td>{{ appt.time }}</td>

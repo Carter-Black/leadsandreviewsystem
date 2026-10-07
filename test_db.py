@@ -24,10 +24,13 @@ assert len(db.get_recent_reviews(days=7)) == 1
 
 # appointments
 appt_date = (datetime.now().date() + timedelta(days=2)).isoformat()
-db.add_appointment("John Smith", "Haircut", appt_date, "4:00", "Wants a quote")
+db.add_appointment("John Smith", "949-555-1234", "john@example.com",
+                    "Haircut", appt_date, "4:00", "Wants a quote")
 todays = db.get_appointments_for_date(appt_date)
 assert len(todays) == 1
 assert todays[0]["customer_name"] == "John Smith"
+assert todays[0]["phone"] == "949-555-1234"
+assert todays[0]["email"] == "john@example.com"
 assert todays[0]["service"] == "Haircut"
 
 week = db.get_appointments_this_week()

@@ -36,6 +36,8 @@ def add_appointment():
     if request.method == "POST":
         db.add_appointment(
             request.form["customer_name"],
+            request.form["phone"],
+            request.form["email"],
             request.form["service"],
             request.form["date"],
             request.form["time"],

@@ -29,10 +29,13 @@ def init_db():
     """)
 
     # column names here match what dashboard.html / add_appointment.html expect
+    # phone and email are the lead's contact info
     cur.execute("""
         CREATE TABLE IF NOT EXISTS appointments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             customer_name TEXT NOT NULL,
+            phone TEXT,
+            email TEXT,
             service TEXT,
             date TEXT NOT NULL,
             time TEXT,
@@ -89,13 +92,13 @@ def get_recent_reviews(days=7):
 
 # ---- Appointments (leads) ----
 
-def add_appointment(customer_name, service, date, time, notes):
+def add_appointment(customer_name, phone, email, service, date, time, notes):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        INSERT INTO appointments (customer_name, service, date, time, notes, created_at)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (customer_name, service, date, time, notes, datetime.now().isoformat()))
+        INSERT INTO appointments (customer_name, phone, email, service, date, time, notes, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (customer_name, phone, email, service, date, time, notes, datetime.now().isoformat()))
     conn.commit()
     conn.close()
 
