@@ -31,6 +31,13 @@ def add_review():
     return render_template("add_review.html")
 
 
+# marks a review as handled so it drops off the dashboard's "new" list
+@app.route("/reviews/<int:review_id>/reviewed", methods=["POST"])
+def mark_reviewed(review_id):
+    db.mark_review_reviewed(review_id)
+    return redirect(url_for("dashboard"))
+
+
 @app.route("/add-appointment", methods=["GET", "POST"], endpoint="add_appointment")
 def add_appointment():
     if request.method == "POST":

@@ -28,7 +28,11 @@
               <span class="review-rating">{{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}</span>
             </div>
             <p class="review-text">{{ review.text }}</p>
-            <span class="review-source">via {{ review.source }} — {{ review.date }}</span>
+            <span class="review-source">via {{ review.source }} — {{ review.review_date }}</span>
+            <!-- POST so a link preview or crawler can't mark reviews by accident -->
+            <form class="review-action" method="POST" action="{{ url_for('mark_reviewed', review_id=review.id) }}">
+              <button type="submit" class="submit-btn">Mark reviewed</button>
+            </form>
           </li>
         {% endfor %}
       </ul>
