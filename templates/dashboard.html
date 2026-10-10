@@ -9,7 +9,7 @@
   <!-- REVIEWS PANEL -->
   <section class="panel">
     <div class="panel-header">
-      <h2>Recent Reviews</h2>
+      <h2>New Reviews</h2>
       <!-- reviews gets passed in from app.py's dashboard() route -->
       <span class="panel-count">{{ reviews|length if reviews else 0 }}</span>
     </div>
@@ -29,12 +29,42 @@
             </div>
             <p class="review-text">{{ review.text }}</p>
             <span class="review-source">via {{ review.source }} — {{ review.date }}</span>
+            <!-- posts to the mark_reviewed route, the review then drops off this list since it only shows status "new" -->
+            <form method="POST" action="{{ url_for('mark_reviewed', review_id=review.id) }}">
+              <button type="submit" class="submit-btn">Mark as reviewed</button>
+            </form>
           </li>
         {% endfor %}
       </ul>
     {% else %}
       <!-- shows up until db.py actually has reviews to return -->
-      <p class="empty-state">No reviews yet. Once reviews are added to the database, they'll show up here.</p>
+      <p class="empty-state">No new reviews. Once reviews are added to the database, they'll show up here.</p>
+    {% endif %}
+  </section>
+
+  <!-- REVIEWED PANEL -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Reviewed</h2>
+      <!-- reviewed_reviews gets passed in from app.py's dashboard() route -->
+      <span class="panel-count">{{ reviewed_reviews|length if reviewed_reviews else 0 }}</span>
+    </div>
+
+    {% if reviewed_reviews %}
+      <ul class="review-list">
+        {% for review in reviewed_reviews %}
+          <li class="review-item">
+            <div class="review-top">
+              <span class="review-author">{{ review.author }}</span>
+              <span class="review-rating">{{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}</span>
+            </div>
+            <p class="review-text">{{ review.text }}</p>
+            <span class="review-source">via {{ review.source }} — {{ review.date }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty-state">No reviewed reviews yet. Reviews you mark as reviewed will move here.</p>
     {% endif %}
   </section>
 

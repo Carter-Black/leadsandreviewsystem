@@ -13,8 +13,9 @@ db.init_db()
 @app.route("/dashboard")
 def dashboard():
     reviews = db.get_new_reviews()
+    reviewed_reviews = db.get_reviewed_reviews()
     appointments = db.get_appointments_this_week()
-    return render_template("dashboard.html", reviews=reviews, appointments=appointments)
+    return render_template("dashboard.html", reviews=reviews, reviewed_reviews=reviewed_reviews, appointments=appointments)
 
 
 @app.route("/add-review", methods=["GET", "POST"], endpoint="add_review")
@@ -45,6 +46,13 @@ def add_appointment():
         )
         return redirect(url_for("dashboard"))
     return render_template("add_appointment.html")
+
+
+@app.route("/mark-reviewed/<int:review_id>", methods=["POST"], endpoint="mark_reviewed")
+def mark_reviewed(review_id):
+    db.mark_review_reviewed(review_id)
+    return redirect(url_for("dashboard"))
+
 
 @app.route("/test-email", methods=["POST"])
 def test_email():

@@ -18,8 +18,12 @@ assert new_reviews[0]["author"] == "Jane Doe"
 assert new_reviews[0]["source"] == "Google"
 assert new_reviews[0]["status"] == "new"
 
+assert len(db.get_reviewed_reviews()) == 0
+
 db.mark_review_reviewed(new_reviews[0]["id"])
 assert len(db.get_new_reviews()) == 0
+assert len(db.get_reviewed_reviews()) == 1
+assert db.get_reviewed_reviews()[0]["author"] == "Jane Doe"
 assert len(db.get_recent_reviews(days=7)) == 1
 
 # appointments

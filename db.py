@@ -70,6 +70,15 @@ def get_new_reviews():
     return rows
 
 
+def get_reviewed_reviews():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM reviews WHERE status = 'reviewed' ORDER BY created_at DESC")
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
 def mark_review_reviewed(review_id):
     conn = get_connection()
     cur = conn.cursor()
