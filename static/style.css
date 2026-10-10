@@ -172,6 +172,10 @@ body {
   color: var(--muted);
 }
 
+.review-action {
+  margin-top: 8px;
+}
+
 /* ---------- Appointments ---------- */
 .appointment-table {
   width: 100%;
