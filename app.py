@@ -55,12 +55,6 @@ def add_appointment():
     return render_template("add_appointment.html")
 
 
-@app.route("/mark-reviewed/<int:review_id>", methods=["POST"], endpoint="mark_reviewed")
-def mark_reviewed(review_id):
-    db.mark_review_reviewed(review_id)
-    return redirect(url_for("dashboard"))
-
-
 @app.route("/test-email", methods=["POST"])
 def test_email():
     recipient = os.environ["REPORT_EMAIL"]
