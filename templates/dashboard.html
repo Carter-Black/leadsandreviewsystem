@@ -59,7 +59,7 @@
               <span class="review-rating">{{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}</span>
             </div>
             <p class="review-text">{{ review.text }}</p>
-            <span class="review-source">via {{ review.source }} — {{ review.date }}</span>
+            <span class="review-source">via {{ review.source }} — {{ review.review_date }}</span>
           </li>
         {% endfor %}
       </ul>
