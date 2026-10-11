@@ -42,6 +42,12 @@
         <input type="time" id="time" name="time" required>
       </div>
 
+      <div class="form-field">
+        <label for="notes">Notes</label>
+        <!-- optional, so no "required" -- app.py falls back to "" if it's left blank -->
+        <textarea id="notes" name="notes" rows="3" placeholder="Anything we should know before the appointment?"></textarea>
+      </div>
+
       <button type="submit" class="submit-btn">Save appointment</button>
 
     </form>

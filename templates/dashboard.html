@@ -85,6 +85,7 @@
             <th>Service</th>
             <th>Date</th>
             <th>Time</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
@@ -96,6 +97,8 @@
               <td>{{ appt.service }}</td>
               <td>{{ appt.date }}</td>
               <td>{{ appt.time }}</td>
+              <!-- dash instead of an empty cell when no notes were left -->
+              <td>{{ appt.notes or '—' }}</td>
             </tr>
           {% endfor %}
         </tbody>
