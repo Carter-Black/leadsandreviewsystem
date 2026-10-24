@@ -1,0 +1,8 @@
+# secrets, never commit these
+.env
+
+# local databases, each person makes their own
+data/*.db
+
+# python cache
+__pycache__/

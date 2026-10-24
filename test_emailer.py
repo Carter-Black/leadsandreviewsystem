@@ -1,0 +1,60 @@
+import os
+from datetime import datetime, timedelta
+
+# dry run mode so this test never sends a real email or needs an API key
+os.environ["EMAIL_DRY_RUN"] = "1"
+
+import db
+import emailer
+
+assert emailer.is_dry_run()
+
+# test email
+message = emailer.send_test_email("someone@example.com")
+assert message["to"] == ["someone@example.com"]
+assert message["subject"] == "Test business report"
+assert "Email is working" in message["html"]
+
+# using a throwaway test db so you don't pollute real data
+db.DB_PATH = "data/test_emailer.db"
+if os.path.exists(db.DB_PATH):
+    os.remove(db.DB_PATH)
+db.init_db()
+
+today = datetime.now().date()
+today_str = today.isoformat()
+tomorrow_str = (today + timedelta(days=1)).isoformat()
+
+# weekly recap with no reviews yet
+recap = emailer.build_weekly_recap_email("owner@example.com")
+assert "No new reviews" in recap["html"]
+
+# weekly recap with reviews, one has html in it to check it gets escaped
+db.add_review("Jane Doe", 5, "Google", "Great service!", today_str)
+db.add_review("Sam Lee", 3, "Yelp", "<script>alert(1)</script>", today_str)
+recap = emailer.build_weekly_recap_email("owner@example.com")
+assert recap["to"] == ["owner@example.com"]
+assert recap["subject"] == "Weekly review recap"
+assert "2 reviews" in recap["html"]
+assert "average rating 4.0" in recap["html"]
+assert "Jane Doe" in recap["html"]
+assert "<script>" not in recap["html"]
+assert "&lt;script&gt;" in recap["html"]
+
+# daily appointments, one today and one tomorrow
+assert "No appointments" in emailer.build_daily_appointments_email("owner@example.com", today_str)["html"]
+db.add_appointment("John Smith", "949-555-1234", "john@example.com",
+                    "Haircut", today_str, "4:00", "Wants a quote")
+db.add_appointment("Mary Jones", "949-555-9999", "mary@example.com",
+                    "Color", tomorrow_str, "10:00", "")
+daily = emailer.build_daily_appointments_email("owner@example.com", today_str)
+assert daily["subject"] == "Appointments for " + today_str
+assert "John Smith" in daily["html"]
+assert "949-555-1234" in daily["html"]
+assert "Mary Jones" not in daily["html"]
+
+# the send functions should hand back the message without sending in dry run
+assert emailer.send_weekly_recap("owner@example.com")["subject"] == "Weekly review recap"
+assert emailer.send_daily_appointments("owner@example.com", today_str)["to"] == ["owner@example.com"]
+
+print("All emailer.py tests passed. No email was sent.")

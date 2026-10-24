@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
 import os
+from dotenv import load_dotenv
 import db
-from emailer import send_test_email
+from emailer import send_test_email, is_dry_run
+
+# loads RESEND_API_KEY, REPORT_EMAIL and EMAIL_DRY_RUN from the .env file if it has them
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -57,8 +61,10 @@ def add_appointment():
 
 @app.route("/test-email", methods=["POST"])
 def test_email():
-    recipient = os.environ["REPORT_EMAIL"]
+    recipient = os.environ.get("REPORT_EMAIL", "")
     send_test_email(recipient)
+    if is_dry_run():
+        return "Dry run, no email sent. The message was printed in the terminal."
     return "Test email sent"
 
 
