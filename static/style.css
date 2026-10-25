@@ -117,6 +117,13 @@ body {
   padding: 2px 10px;
 }
 
+/* row of email buttons at the top of a panel */
+.panel-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
 .empty-state {
   color: var(--muted);
   font-size: 14px;

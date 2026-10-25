@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for
 import os
 from dotenv import load_dotenv
 import db
-from emailer import send_test_email, is_dry_run
+from datetime import datetime
+from emailer import send_test_email, send_weekly_recap, send_daily_appointments, is_dry_run
 
 # loads RESEND_API_KEY, REPORT_EMAIL and EMAIL_DRY_RUN from the .env file if it has them
 load_dotenv()
@@ -66,6 +67,26 @@ def test_email():
     if is_dry_run():
         return "Dry run, no email sent. The message was printed in the terminal."
     return "Test email sent"
+
+
+@app.route("/send-weekly-recap", methods=["POST"])
+def weekly_recap():
+    recipient = os.environ.get("REPORT_EMAIL", "")
+    send_weekly_recap(recipient)
+    if is_dry_run():
+        return "Dry run, no email sent. The weekly recap was printed in the terminal."
+    return "Weekly recap sent"
+
+
+@app.route("/send-daily-appointments", methods=["POST"])
+def daily_appointments():
+    recipient = os.environ.get("REPORT_EMAIL", "")
+    # same YYYY-MM-DD format the appointment form's date picker saves
+    today = datetime.now().date().isoformat()
+    send_daily_appointments(recipient, today)
+    if is_dry_run():
+        return "Dry run, no email sent. Today's appointments were printed in the terminal."
+    return "Today's appointments sent"
 
 
 if __name__ == "__main__":

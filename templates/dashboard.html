@@ -14,9 +14,15 @@
       <span class="panel-count">{{ reviews|length if reviews else 0 }}</span>
     </div>
 
-    <form method="POST" action="{{ url_for('test_email') }}">
-      <button type="submit" class="submit-btn">Send test report</button>
-    </form>
+    <div class="panel-actions">
+      <form method="POST" action="{{ url_for('test_email') }}">
+        <button type="submit" class="submit-btn">Send test report</button>
+      </form>
+      <!-- emails a recap of reviews added in the last 7 days -->
+      <form method="POST" action="{{ url_for('weekly_recap') }}">
+        <button type="submit" class="submit-btn">Send weekly recap</button>
+      </form>
+    </div>
 
     {% if reviews %}
       <ul class="review-list">
@@ -73,6 +79,13 @@
     <div class="panel-header">
       <h2>Upcoming Appointments</h2>
       <span class="panel-count">{{ appointments|length if appointments else 0 }}</span>
+    </div>
+
+    <div class="panel-actions">
+      <!-- emails just today's appointments, not the whole week shown below -->
+      <form method="POST" action="{{ url_for('daily_appointments') }}">
+        <button type="submit" class="submit-btn">Send today's appointments</button>
+      </form>
     </div>
 
     {% if appointments %}
