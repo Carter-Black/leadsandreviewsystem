@@ -1,14 +1,28 @@
 from flask import Flask, render_template, request, redirect, url_for
+from markupsafe import escape
 import os
 from dotenv import load_dotenv
 import db
 from datetime import datetime
-from emailer import send_test_email, send_weekly_recap, send_daily_appointments, is_dry_run
+from emailer import (send_test_email, send_weekly_recap, send_daily_appointments, is_dry_run,
+                     send_new_lead_alert, send_bad_review_alert, is_bad_review)
 
 # loads RESEND_API_KEY, REPORT_EMAIL and EMAIL_DRY_RUN from the .env file if it has them
 load_dotenv()
 
 app = Flask(__name__)
+
+
+def report_email():
+    return os.environ.get("REPORT_EMAIL", "")
+
+
+def try_send(send, *args):
+    # alerts go out after the data is saved, so a failed email never loses a review or lead
+    try:
+        send(*args)
+    except Exception as e:
+        print("Email failed:", e)
 
 # creates the tables if they don't exist yet, safe to call every time the app starts
 db.init_db()
@@ -26,13 +40,13 @@ def dashboard():
 @app.route("/add-review", methods=["GET", "POST"], endpoint="add_review")
 def add_review():
     if request.method == "POST":
-        db.add_review(
-            request.form["author"],
-            int(request.form["rating"]),
-            request.form["source"],
-            request.form["text"],
-            request.form["date"]
-        )
+        author = request.form["author"]
+        rating = int(request.form["rating"])
+        source = request.form["source"]
+        text = request.form["text"]
+        db.add_review(author, rating, source, text, request.form["date"])
+        if is_bad_review(rating):
+            try_send(send_bad_review_alert, report_email(), author, rating, source, text)
         return redirect(url_for("dashboard"))
     return render_template("add_review.html")
 
@@ -56,14 +70,17 @@ def add_appointment():
             request.form["time"],
             request.form.get("notes", "")
         )
+        try_send(send_new_lead_alert, report_email(), request.form)
         return redirect(url_for("dashboard"))
     return render_template("add_appointment.html")
 
 
 @app.route("/test-email", methods=["POST"])
 def test_email():
-    recipient = os.environ.get("REPORT_EMAIL", "")
-    send_test_email(recipient)
+    try:
+        send_test_email(report_email())
+    except Exception as e:
+        return f"Email failed: {escape(str(e))}", 500
     if is_dry_run():
         return "Dry run, no email sent. The message was printed in the terminal."
     return "Test email sent"
@@ -71,8 +88,10 @@ def test_email():
 
 @app.route("/send-weekly-recap", methods=["POST"])
 def weekly_recap():
-    recipient = os.environ.get("REPORT_EMAIL", "")
-    send_weekly_recap(recipient)
+    try:
+        send_weekly_recap(report_email())
+    except Exception as e:
+        return f"Email failed: {escape(str(e))}", 500
     if is_dry_run():
         return "Dry run, no email sent. The weekly recap was printed in the terminal."
     return "Weekly recap sent"
@@ -80,10 +99,12 @@ def weekly_recap():
 
 @app.route("/send-daily-appointments", methods=["POST"])
 def daily_appointments():
-    recipient = os.environ.get("REPORT_EMAIL", "")
     # same YYYY-MM-DD format the appointment form's date picker saves
     today = datetime.now().date().isoformat()
-    send_daily_appointments(recipient, today)
+    try:
+        send_daily_appointments(report_email(), today)
+    except Exception as e:
+        return f"Email failed: {escape(str(e))}", 500
     if is_dry_run():
         return "Dry run, no email sent. Today's appointments were printed in the terminal."
     return "Today's appointments sent"

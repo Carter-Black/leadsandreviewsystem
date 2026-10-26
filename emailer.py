@@ -9,6 +9,12 @@ def is_dry_run():
     return os.environ.get("EMAIL_DRY_RUN", "1") != "0"
 
 
+def sender():
+    # onboarding@resend.dev only works for sending to your own Resend account,
+    # set EMAIL_FROM to an address on a verified domain to send anywhere else
+    return os.environ.get("EMAIL_FROM", "onboarding@resend.dev")
+
+
 def clean(value):
     # escapes anything typed into the forms so it can't inject html into the email
     return html.escape(value or "")
@@ -16,7 +22,7 @@ def clean(value):
 
 def build_test_email(recipient):
     return {
-        "from": "onboarding@resend.dev",
+        "from": sender(),
         "to": [recipient],
         "subject": "Test business report",
         "html": "<h1>Email is working</h1><p>Your report system is connected.</p>",
@@ -40,7 +46,7 @@ def build_weekly_recap_email(recipient, days=7):
         body = f"<p>No new reviews in the last {days} days.</p>"
 
     return {
-        "from": "onboarding@resend.dev",
+        "from": sender(),
         "to": [recipient],
         "subject": "Weekly review recap",
         "html": "<h1>Weekly review recap</h1>" + body,
@@ -63,10 +69,52 @@ def build_daily_appointments_email(recipient, target_date):
         body = "<p>No appointments for this day.</p>"
 
     return {
-        "from": "onboarding@resend.dev",
+        "from": sender(),
         "to": [recipient],
         "subject": f"Appointments for {target_date}",
         "html": f"<h1>Appointments for {target_date}</h1>" + body,
+    }
+
+
+def build_new_lead_email(recipient, appointment):
+    # appointment can be the submitted form or a dict with the same keys
+    name = clean(appointment.get("customer_name"))
+    body = ("<table border='1' cellpadding='6'>"
+            f"<tr><th>Name</th><td>{name}</td></tr>"
+            f"<tr><th>Phone</th><td>{clean(appointment.get('phone'))}</td></tr>"
+            f"<tr><th>Email</th><td>{clean(appointment.get('email'))}</td></tr>"
+            f"<tr><th>Service</th><td>{clean(appointment.get('service'))}</td></tr>"
+            f"<tr><th>Date</th><td>{clean(appointment.get('date'))}</td></tr>"
+            f"<tr><th>Time</th><td>{clean(appointment.get('time'))}</td></tr>"
+            f"<tr><th>Notes</th><td>{clean(appointment.get('notes'))}</td></tr>"
+            "</table>")
+
+    return {
+        "from": sender(),
+        "to": [recipient],
+        # subject is plain text not html, so it doesn't need escaping
+        "subject": f"New lead: {appointment.get('customer_name') or 'unknown'}",
+        "html": f"<h1>New lead: {name}</h1>" + body,
+    }
+
+
+# ratings at or below this count as bad and get an alert right away
+BAD_REVIEW_RATING = 2
+
+
+def is_bad_review(rating):
+    return rating <= BAD_REVIEW_RATING
+
+
+def build_bad_review_email(recipient, author, rating, source, text):
+    return {
+        "from": sender(),
+        "to": [recipient],
+        "subject": f"Bad review alert: {rating}/5 from {author}",
+        "html": (f"<h1>Bad review alert</h1>"
+                 f"<p><b>{clean(author)}</b> left a {rating}/5 review via {clean(source)}:</p>"
+                 f"<blockquote>{clean(text)}</blockquote>"
+                 "<p>You may want to reply soon.</p>"),
     }
 
 
@@ -79,6 +127,8 @@ def send_email(message):
         raise ValueError("REPORT_EMAIL is not set")
 
     # key is read here instead of at import so the app can start without it
+    if not os.environ.get("RESEND_API_KEY"):
+        raise ValueError("RESEND_API_KEY is not set")
     resend.api_key = os.environ["RESEND_API_KEY"]
     return resend.Emails.send(message)
 
@@ -93,3 +143,11 @@ def send_weekly_recap(recipient, days=7):
 
 def send_daily_appointments(recipient, target_date):
     return send_email(build_daily_appointments_email(recipient, target_date))
+
+
+def send_new_lead_alert(recipient, appointment):
+    return send_email(build_new_lead_email(recipient, appointment))
+
+
+def send_bad_review_alert(recipient, author, rating, source, text):
+    return send_email(build_bad_review_email(recipient, author, rating, source, text))
